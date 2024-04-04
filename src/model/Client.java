@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 import java.lang.String;
+
 public class Client extends User {
     private String address;
     private List<String> allergicFood;
@@ -12,10 +13,6 @@ public class Client extends User {
         super(username, email, password, phoneNumber, age);
         this.address = address;
         this.allergicFood = new ArrayList<>();
-    }
-
-    public Client makeCopy() {
-        return new RegularUser(this);
     }
 
     public String getAddress() {

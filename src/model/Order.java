@@ -1,5 +1,6 @@
 package model;
 
+import java.util.List;
 public class Order {
     private List<String> foodList;
     private List<String> drinkList;

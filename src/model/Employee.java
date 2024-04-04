@@ -17,10 +17,6 @@ public class Employee extends User {
         this.dailyWorkHours = dailyWorkHours;
     }
 
-    public Employee makeCopy() {
-        return new RegularUser(this);
-    }
-
     public String getJobTitle() {
         return jobTitle;
     }

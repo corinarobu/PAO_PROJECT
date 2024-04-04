@@ -7,11 +7,11 @@ public abstract class User {
 
     static private int idCounter = 0;
     private final int id;
-    private final String username;
-    private final String email;
-    private String password;
-    private int age;
-    private String phoneNumber;
+    protected final String username;
+    protected final String email;
+    protected String password;
+    protected int age;
+    protected String phoneNumber;
 
     public User(String username, String email, String password, String phoneNumber, int age) {
         ++idCounter;
@@ -43,8 +43,6 @@ public abstract class User {
     public String getPassword() {
         return password;
     }
-
-    public abstract User makeCopy();
 
     public int getId() {
         return id;
