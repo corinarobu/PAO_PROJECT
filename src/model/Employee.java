@@ -49,6 +49,7 @@ public class Employee extends User {
         this.dailyWorkHours = dailyWorkHours;
     }
 
+
     @Override
     public String toString() {
         return "Employee{" +

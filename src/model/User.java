@@ -5,8 +5,8 @@ import java.util.List;
 
 public abstract class User {
 
-    static private int idCounter = 0;
-    private final int id;
+    static protected int idCounter = 0;
+    protected final int id;
     protected final String username;
     protected final String email;
     protected String password;

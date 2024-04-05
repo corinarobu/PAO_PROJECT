@@ -1,6 +1,6 @@
 package view;
 
-import service.SampleService;
+import service.UserService;
 import java.util.Scanner;
 
 import exceptions.InvalidDataException;
@@ -8,7 +8,7 @@ import exceptions.InvalidDataException;
 public class ConsoleApp {
 
     private Scanner scanner = new Scanner(System.in);
-    private SampleService service = new SampleService();
+    private UserService service = new UserService();
 
     public static void main(String args[]) {
         ConsoleApp app = new ConsoleApp();
