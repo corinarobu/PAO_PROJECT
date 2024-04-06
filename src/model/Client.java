@@ -7,11 +7,13 @@ import java.lang.String;
 public class Client extends User {
     private String address;
     private List<String> allergicFood;
+    private List<Review> reviews;
 
     public Client(String username, String email, String password, String phoneNumber, int age, String address) {
         super(username, email, password, phoneNumber, age);
         this.address = address;
         this.allergicFood = new ArrayList<>();
+        this.reviews = new ArrayList<>();
     }
 
     public String getAddress() {
@@ -41,7 +43,14 @@ public class Client extends User {
                 "username='" + getUsername() + '\'' +
                 ", email='" + getEmail() + '\'' +
                 ", address='" + address + '\'' +
+                ", password='" + getPassword() + '\'' +
+                ", phoneNumber='" + getPhoneNumber() + '\'' +
                 ", allergicFood=" + allergicFood +
                 '}';
+    }
+
+
+    public void addReview(Review review) {
+        reviews.add(review);
     }
 }

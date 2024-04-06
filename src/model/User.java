@@ -69,4 +69,7 @@ public abstract class User {
 
     public abstract String toString();
 
+    public void setAge(int age) {
+     this.age = age;
+    }
 }

@@ -12,13 +12,13 @@ Entities:
     reviews
 
 
--- place order
+-- add + viewAll food/ drink/ user
+-- place order + View placed orders
+-- process an order + View processed orders
 -- update profile
--- add review
--- add products to menu
--- process order
--- search for restaurants and products
--- generate sales report
+-- add review + view reviews
+-- search for restaurants
 -- delete client
--- take order
--- menu suggestion
+-- add restaurant
+-- suggest food by Price
+-- suggest drink by Price

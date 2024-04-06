@@ -3,6 +3,7 @@ package service;
 import model.Food;
 import persistence.FoodRepository;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
@@ -41,6 +42,19 @@ public class FoodService {
     public void showAllFood() {
         System.out.println("List of foods:");
         foodRepository.getAllFood().forEach(System.out::println);
+    }
+
+    public List<Food> suggestFoodByPrice(double maxPrice) {
+        List<Food> suggestedFood = new ArrayList<>();
+        List<Food> allFood = foodRepository.getAllFood();
+
+        for (Food food : allFood) {
+            if (food.getPrice() <= maxPrice) {
+                suggestedFood.add(food);
+            }
+        }
+
+        return suggestedFood;
     }
 
 }

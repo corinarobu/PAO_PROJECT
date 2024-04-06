@@ -1,13 +1,14 @@
 package view;
 
+import model.Drink;
+import model.Food;
 import persistence.ClientRepository;
 import persistence.EmployeeRepository;
 import persistence.OrderRepository;
-import service.DrinkService;
-import service.FoodService;
-import service.OrderService;
-import service.UserService;
+import persistence.RestaurantRepository;
+import service.*;
 
+import java.util.List;
 import java.util.Scanner;
 
 import exceptions.InvalidDataException;
@@ -16,6 +17,12 @@ public class ConsoleApp {
     private Scanner scanner = new Scanner(System.in);
     private FoodService serviceFood = new FoodService();
     private DrinkService serviceDrink = new DrinkService();
+
+
+
+
+    private RestaurantRepository restaurantRepository = new RestaurantRepository();
+    private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 
 
     private ClientRepository clientRepository = new ClientRepository();
@@ -51,9 +58,11 @@ public class ConsoleApp {
         System.out.println("10. View processed orders");
         System.out.println("11. Update profile");
         System.out.println("12. Add a review");
-        System.out.println("13. Search for restaurants and products");
+        System.out.println("13. Search for restaurants");
         System.out.println("14. Delete client");
-        System.out.println("15. Exit");
+        System.out.println("15. Add restaurant");
+        System.out.println("16. Suggest food and drink by price");
+        System.out.println("17. Exit");
     }
 
     private void execute(int option) {
@@ -89,18 +98,54 @@ public class ConsoleApp {
                 orderService.displayProcessedOrders();
                 break;
             case 11:
-                // Update profile
+                serviceUser.updateUserProfile();
                 break;
             case 12:
-                // Add a review
+                serviceUser.leaveReview();
+                System.out.print("Doriți să afișați toate review-urile? (da/nu): ");
+                String showReviewsOption = scanner.nextLine().trim().toLowerCase();
+                if (showReviewsOption.equals("da")) {
+                    serviceUser.showAllReviews();
+                }
                 break;
             case 13:
-                // Search for restaurants and products
+                System.out.print("Introduceți tipul de bucătărie pentru căutare: ");
+                String cuisineType = scanner.nextLine();
+                serviceRestaurant.searchRestaurantsByCuisineType(cuisineType);
                 break;
+
             case 14:
-                // Delete client
+                serviceUser.deleteClient();
                 break;
+
             case 15:
+                serviceRestaurant.addRestaurant();
+                break;
+            case 16:
+                System.out.print("Introduceți prețul maxim dorit: ");
+                double maxPrice = Double.parseDouble(scanner.nextLine());
+
+                System.out.println("Sugestii meniu pentru prețul de " + maxPrice + ":");
+
+                List<Food> suggestedFood = serviceFood.suggestFoodByPrice(maxPrice);
+                List<Drink> suggestedDrinks = serviceDrink.suggestDrinksByPrice(maxPrice);
+
+                if (suggestedFood.isEmpty() && suggestedDrinks.isEmpty()) {
+                    System.out.println("Nu există alimente sau băuturi disponibile în această gamă de prețuri.");
+                } else {
+                    System.out.println("Alimente:");
+                    for (Food food : suggestedFood) {
+                        System.out.println(food.getName() + " - " + food.getPrice());
+                    }
+
+                    System.out.println("Băuturi:");
+                    for (Drink drink : suggestedDrinks) {
+                        System.out.println(drink.getName() + " - " + drink.getPrice());
+                    }
+                }
+                break;
+
+            case 17:
                 System.exit(0);
         }
     }
@@ -108,10 +153,10 @@ public class ConsoleApp {
     private int readOption() {
         try {
             int option = readInt();
-            if (option >= 1 && option <= 15) {
+            if (option >= 1 && option <= 17) {
                 return option;
             } else {
-                System.out.println("Invalid option. Please enter a number between 1 and 15.");
+                System.out.println("Invalid option. Please enter a number between 1 and 17.");
             }
         } catch (InvalidDataException invalid) {
             System.out.println("Invalid input. Please enter a valid number.");

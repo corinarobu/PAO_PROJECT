@@ -41,4 +41,17 @@ public class EmployeeRepository implements GenericRepository<Employee> {
         return new ArrayList<>(employeeMap.values());
     }
 
+
+    public boolean checkEmployeeExists(int employeeId) {
+        return employeeMap.containsKey(employeeId);
+    }
+
+    public Employee getEmployee(int employeeId) {
+        return employeeMap.get(employeeId);
+    }
+
+    public void updateEmployee(int employeeId, Employee updatedEmployee) {
+        employeeMap.put(employeeId, updatedEmployee);
+    }
+
 }

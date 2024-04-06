@@ -2,7 +2,9 @@ package persistence;
 
 import model.Restaurant;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class RestaurantRepository implements GenericRepository<Restaurant> {
@@ -32,5 +34,9 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
     @Override
     public int getSize() {
         return restaurantMap.size();
+    }
+
+    public List<Restaurant> getAllRestaurants() {
+        return new ArrayList<>(restaurantMap.values());
     }
 }

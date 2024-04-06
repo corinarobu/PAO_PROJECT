@@ -41,6 +41,7 @@ public class ClientRepository implements GenericRepository<Client> {
         System.out.println("Client with ID " + entity.getId() + " not found. Update failed.");
     }
 
+
     @Override
     public void delete(Client entity) {
         for (int i = 0; i < storage.length; i++) {
@@ -87,5 +88,33 @@ public class ClientRepository implements GenericRepository<Client> {
         }
 
         return maxId + 1;
+    }
+
+    public boolean checkClientExists(int clientId) {
+        for (Client client : storage) {
+            if (client != null && client.getId() == clientId) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public Client getClient(int clientId) {
+        for (Client client : storage) {
+            if (client != null && client.getId() == clientId) {
+                return client;
+            }
+        }
+        return null;
+    }
+
+    public void updateClient(int clientId, Client updatedClient) {
+        for (int i = 0; i < storage.length; i++) {
+            if (storage[i] != null && storage[i].getId() == clientId) {
+                storage[i] = updatedClient;
+                return;
+            }
+        }
+        System.out.println("Client with ID " + clientId + " not found. Update failed.");
     }
 }
