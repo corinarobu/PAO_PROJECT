@@ -2,7 +2,9 @@ package persistence;
 
 import model.Food;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class FoodRepository implements GenericRepository<Food> {
@@ -33,4 +35,13 @@ public class FoodRepository implements GenericRepository<Food> {
     public int getSize() {
         return foodMap.size();
     }
+
+    public boolean checkFoodExists(int foodId) {
+        return foodMap.containsKey(foodId);
+    }
+
+    public List<Food> getAllFood() {
+        return new ArrayList<>(foodMap.values());
+    }
+
 }

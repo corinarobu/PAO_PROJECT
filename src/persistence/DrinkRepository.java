@@ -33,4 +33,35 @@ public class DrinkRepository implements GenericRepository<Drink> {
     public int getSize() {
         return drinkMap.size();
     }
+
+    public List<Drink> getAllDrinks() {
+        return new ArrayList<>(drinkMap.values());
+    }
+
+    public boolean checkDrinkExists(String drinkItem) {
+        for (Drink drink : drinkMap.values()) {
+            if (drink.getName().equals(drinkItem)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
+    public void showAllDrinks() {
+        List<Drink> drinks = getAllDrinks();
+        if (!drinks.isEmpty()) {
+            System.out.println("Available Drinks:");
+            for (Drink drink : drinks) {
+                System.out.println("Name: " + drink.getName());
+                System.out.println("Price: " + drink.getPrice());
+                System.out.println("Alcoholic: " + (drink.isAlcoholic() ? "Yes" : "No"));
+                System.out.println("Calories: " + drink.getCalories());
+                System.out.println();
+            }
+        } else {
+            System.out.println("No drinks available.");
+        }
+    }
+
 }

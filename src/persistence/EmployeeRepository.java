@@ -1,8 +1,11 @@
 package persistence;
 
+import model.Client;
 import model.Employee;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class EmployeeRepository implements GenericRepository<Employee> {
@@ -33,4 +36,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
     public int getSize() {
         return employeeMap.size();
     }
+
+    public List<Employee> getAllEmployees() {
+        return new ArrayList<>(employeeMap.values());
+    }
+
 }

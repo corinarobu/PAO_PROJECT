@@ -47,5 +47,17 @@ public class Food {
         return calories;
     }
 
+    @Override
+    public String toString() {
+        return "Food{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", price=" + price +
+                ", allergens=" + allergens +
+                ", vegetarian=" + vegetarian +
+                ", calories=" + calories +
+                '}';
+    }
+
 
 }

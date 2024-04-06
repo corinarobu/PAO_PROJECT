@@ -2,7 +2,9 @@ package persistence;
 
 import model.Client;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class ClientRepository implements GenericRepository<Client> {
 
@@ -54,5 +56,36 @@ public class ClientRepository implements GenericRepository<Client> {
     @Override
     public int getSize() {
         return storage.length;
+    }
+
+    public Client getClientById(int clientId) {
+        for (int i = 0; i < storage.length; i++) {
+            if (storage[i] != null && storage[i].getId() == clientId) {
+                return storage[i];
+            }
+        }
+        return null;
+    }
+
+    public List<Client> getAllClients() {
+        List<Client> clients = new ArrayList<>();
+        for (Client client : storage) {
+            if (client != null) {
+                clients.add(client);
+            }
+        }
+        return clients;
+    }
+
+
+    public int getNextId() {
+        int maxId = 0;
+        for (Client client : storage) {
+            if (client.getId() > maxId) {
+                maxId = client.getId();
+            }
+        }
+
+        return maxId + 1;
     }
 }

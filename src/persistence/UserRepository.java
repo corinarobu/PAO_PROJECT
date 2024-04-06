@@ -1,5 +1,7 @@
 package persistence;
 
+import java.util.Optional;
+
 import model.Drink;
 import model.User;
 
@@ -33,4 +35,15 @@ public class UserRepository implements GenericRepository<User> {
     public int getSize() {
         return userMap.size();
     }
+
+
+    public Optional<User> getUserById(int userId) {
+        for (Map.Entry<Integer, User> entry : userMap.entrySet()) {
+            if (entry.getKey() == userId) {
+                return Optional.of(entry.getValue());
+            }
+        }
+        return Optional.empty();
+    }
+
 }

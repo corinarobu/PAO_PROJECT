@@ -2,7 +2,9 @@ package persistence;
 
 import model.Order;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class OrderRepository implements GenericRepository<Order> {
@@ -32,5 +34,8 @@ public class OrderRepository implements GenericRepository<Order> {
     @Override
     public int getSize() {
         return orderMap.size();
+    }
+
+    public List<Order> getAllOrders() {return new ArrayList<>(orderMap.values());
     }
 }

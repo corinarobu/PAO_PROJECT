@@ -32,6 +32,7 @@ public abstract class User {
         this.age = other.age;
     }
 
+
     public String getUsername() {
         return username;
     }
@@ -52,6 +53,12 @@ public abstract class User {
         this.password = password;
     }
 
+    public void setPhoneNumber(String phoneNumber) {
+        this.phoneNumber = phoneNumber;
+    }
+
+
+
     public int getAge() {
         return age;
     }
@@ -61,4 +68,5 @@ public abstract class User {
     }
 
     public abstract String toString();
+
 }
