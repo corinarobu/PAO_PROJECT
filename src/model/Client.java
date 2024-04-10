@@ -16,6 +16,7 @@ public class Client extends User {
         this.reviews = new ArrayList<>();
     }
 
+
     public String getAddress() {
         return address;
     }

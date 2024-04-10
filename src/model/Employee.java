@@ -29,6 +29,12 @@ public class Employee extends User {
         return hiringDate;
     }
 
+    public void setUserDetails(String password, String phoneNumber, int age) {
+        this.password = password;
+        this.phoneNumber = phoneNumber;
+        this.age = age;
+    }
+
     public void setHiringDate(Date hiringDate) {
         this.hiringDate = hiringDate;
     }

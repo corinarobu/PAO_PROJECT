@@ -33,6 +33,7 @@ public abstract class User {
     }
 
 
+
     public String getUsername() {
         return username;
     }
@@ -71,5 +72,11 @@ public abstract class User {
 
     public void setAge(int age) {
      this.age = age;
+    }
+
+    public void setUserDetails(String password, String phoneNumber, int age) {
+        this.password = password;
+        this.phoneNumber =phoneNumber;
+        this.age = age;
     }
 }

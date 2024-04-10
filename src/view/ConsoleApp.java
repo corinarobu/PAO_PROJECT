@@ -18,9 +18,6 @@ public class ConsoleApp {
     private FoodService serviceFood = new FoodService();
     private DrinkService serviceDrink = new DrinkService();
 
-
-
-
     private RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 
@@ -115,9 +112,8 @@ public class ConsoleApp {
                 break;
 
             case 14:
-                serviceUser.deleteClient();
+                serviceUser.deleteUser();
                 break;
-
             case 15:
                 serviceRestaurant.addRestaurant();
                 break;
@@ -159,6 +155,7 @@ public class ConsoleApp {
                 System.out.println("Invalid option. Please enter a number between 1 and 17.");
             }
         } catch (InvalidDataException invalid) {
+
             System.out.println("Invalid input. Please enter a valid number.");
         }
         return readOption();

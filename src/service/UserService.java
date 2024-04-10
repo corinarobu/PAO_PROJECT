@@ -3,6 +3,7 @@ package service;
 import model.Client;
 import model.Employee;
 import model.Review;
+import model.User;
 import persistence.ClientRepository;
 import persistence.EmployeeRepository;
 
@@ -12,6 +13,8 @@ import java.util.List;
 import java.util.Scanner;
 
 public class UserService {
+
+    private List<User> userList = new ArrayList<>();
     private ClientRepository clientRepository;
     private EmployeeRepository employeeRepository;
     private Scanner scanner;
@@ -50,6 +53,11 @@ public class UserService {
         }
     }
 
+
+    public void addUser(User user) {
+            userList.add(user);
+    }
+
     private int readOption() {
         try {
             return Integer.parseInt(scanner.nextLine());
@@ -73,8 +81,10 @@ public class UserService {
         System.out.println("Introduceți adresa clientului:");
         String address = scanner.nextLine();
 
-        Client newClient = new Client(username, email, password, phoneNumber, age, address);
-        clientRepository.add(newClient);
+
+        User user = new Client(username, email, password, phoneNumber, age, address);
+
+        addUser(user);
         System.out.println("Client adăugat cu succes.");
     }
 
@@ -101,32 +111,39 @@ public class UserService {
         System.out.println("Introduceți numărul de ore de lucru zilnice ale angajatului:");
         int dailyWorkHours = Integer.parseInt(scanner.nextLine());
 
-        Employee newEmployee = new Employee(username, email, password, phoneNumber, age, jobTitle, hiringDate, salary, dailyWorkHours);
-        employeeRepository.add(newEmployee);
+
+        User user = new Employee(username, email, password, phoneNumber, age, jobTitle
+                , hiringDate,  salary,  dailyWorkHours);
+
+        addUser(user);;
         System.out.println("Angajat adăugat cu succes.");
     }
 
     public void showUsers() {
-        List<Client> clients = clientRepository.getAllClients();
-        List<Employee> employees = employeeRepository.getAllEmployees();
+        System.out.println("Users:");
 
-        System.out.println("Clients:");
-        for (Client client : clients) {
-            System.out.println(client);
-        }
-
-        System.out.println("Employees:");
-        for (Employee employee : employees) {
-            System.out.println(employee);
+        for (User user : userList) {
+            if (user instanceof Client) {
+                System.out.println("Client: " + user);
+            } else if (user instanceof Employee) {
+                System.out.println("Employee: " + user);
+            }
         }
     }
-
 
     public void updateUserProfile() {
         System.out.print("Enter user ID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        if (!clientRepository.checkClientExists(userId) && !employeeRepository.checkEmployeeExists(userId)) {
+        User currentUser = null;
+        for (User user : userList) {
+            if (user.getId() == userId) {
+                currentUser = user;
+                break;
+            }
+        }
+
+        if (currentUser == null) {
             System.out.println("User with ID " + userId + " not found.");
             return;
         }
@@ -139,32 +156,15 @@ public class UserService {
         System.out.print("Age: ");
         int age = Integer.parseInt(scanner.nextLine());
 
-        if (clientRepository.checkClientExists(userId)) {
-            Client currentClient = clientRepository.getClient(userId);
+        currentUser.setPassword(password);
+        currentUser.setPhoneNumber(phoneNumber);
+        currentUser.setAge(age);
 
-
-            currentClient.setPassword(password);
-            currentClient.setPhoneNumber(phoneNumber);
-            currentClient.setAge(age);
-
-            clientRepository.update(currentClient);
-            clientList = clientRepository.getAllClients();
-
-            System.out.println("Client profile updated successfully.");
-        } else if (employeeRepository.checkEmployeeExists(userId)) {
-            Employee currentEmployee = employeeRepository.getEmployee(userId);
-
-
-            currentEmployee.setPassword(password);
-            currentEmployee.setPhoneNumber(phoneNumber);
-            currentEmployee.setAge(age);
-
-            employeeRepository.update(currentEmployee);
-            employeeList = employeeRepository.getAllEmployees();
-
-            System.out.println("Employee profile updated successfully.");
-        }
+        System.out.println("User profile updated successfully.");
     }
+
+
+
 
     public void deleteUser() {
         System.out.println("Select user type to delete:");
@@ -186,57 +186,72 @@ public class UserService {
         }
     }
 
+    public void deleteUser(User user) {
+        userList.remove(user);
+    }
+
     public void deleteClient() {
         System.out.print("Enter client ID: ");
         int clientId = Integer.parseInt(scanner.nextLine());
 
-        if (!clientRepository.checkClientExists(clientId)) {
-            System.out.println("Client with ID " + clientId + " not found.");
+        User userToDelete = null;
+        for (User user : userList) {
+            if (user.getId() == clientId) {
+                userToDelete = user;
+                break;
+            }
+        }
+
+        if (userToDelete == null) {
+            System.out.println("User with ID " + clientId + " not found.");
             return;
         }
 
-        Client clientToDelete = clientRepository.getClient(clientId);
-
+        if (!(userToDelete instanceof Client)) {
+            System.out.println("User with ID " + clientId + " is not a client.");
+            return;
+        }
 
         System.out.println("Are you sure you want to delete this client? (Y/N)");
         String confirmation = scanner.nextLine().trim();
 
         if (confirmation.equalsIgnoreCase("Y")) {
-
-            clientRepository.delete(clientToDelete);
-            clientList = clientRepository.getAllClients();
-
+            deleteUser(userToDelete);
             System.out.println("Client deleted successfully.");
         } else {
             System.out.println("Deletion canceled.");
         }
     }
 
-    private void deleteEmployee() {
+
+    public void deleteEmployee() {
         System.out.print("Enter employee ID: ");
         int employeeId = Integer.parseInt(scanner.nextLine());
 
-        if (!employeeRepository.checkEmployeeExists(employeeId)) {
-            System.out.println("Employee with ID " + employeeId + " not found.");
+        User userToDelete = null;
+        for (User user : userList) {
+            if (user.getId() == employeeId) {
+                userToDelete = user;
+                break;
+            }
+        }
+
+        if (userToDelete == null) {
+            System.out.println("User with ID " + employeeId + " not found.");
             return;
         }
 
-        // Obținem angajatul specificat
-        Employee employeeToDelete = employeeRepository.getEmployee(employeeId);
-
-
-        System.out.println("Are you sure you want to delete this employee? (Y/N)");
+        System.out.println("Are you sure you want to delete this user? (Y/N)");
         String confirmation = scanner.nextLine().trim();
 
         if (confirmation.equalsIgnoreCase("Y")) {
-
-            employeeRepository.delete(employeeToDelete);
-            employeeList = employeeRepository.getAllEmployees();
-            System.out.println("Employee deleted successfully.");
+            deleteUser(userToDelete);
+            System.out.println("User deleted successfully.");
         } else {
             System.out.println("Deletion canceled.");
         }
     }
+
 
 
 
@@ -244,7 +259,14 @@ public class UserService {
         System.out.print("Introduceți ID-ul dvs. de client: ");
         int clientId = Integer.parseInt(scanner.nextLine());
 
-        Client client = clientRepository.getClient(clientId);
+        Client client = null;
+        for (User user : userList) {
+            if (user instanceof Client && user.getId() == clientId) {
+                client = (Client) user;
+                break;
+            }
+        }
+
         if (client == null) {
             System.out.println("Clientul cu ID-ul " + clientId + " nu există.");
             return;
@@ -260,11 +282,11 @@ public class UserService {
 
         client.addReview(review);
 
-
         reviewList.add(review);
 
         System.out.println("Recenzia a fost adăugată cu succes.");
     }
+
 
 
     public void showAllReviews() {
