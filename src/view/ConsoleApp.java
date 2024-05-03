@@ -1,38 +1,44 @@
 package view;
 
-import model.Drink;
-import model.Food;
-import persistence.ClientRepository;
-import persistence.EmployeeRepository;
-import persistence.OrderRepository;
-import persistence.RestaurantRepository;
-import service.*;
+import jdbc.model.Drink;
+import jdbc.model.Food;
+import jdbc.persistence.ClientRepository;
+import jdbc.persistence.EmployeeRepository;
+import jdbc.persistence.OrderRepository;
+import jdbc.persistence.RestaurantRepository;
+import jdbc.service.*;
 
 import java.util.List;
 import java.util.Scanner;
 
-import exceptions.InvalidDataException;
+import jdbc.exceptions.InvalidDataException;
 
 public class ConsoleApp {
     private Scanner scanner = new Scanner(System.in);
     private FoodService serviceFood = new FoodService();
     private DrinkService serviceDrink = new DrinkService();
 
+
+
     private RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 
 
-    private ClientRepository clientRepository = new ClientRepository();
-    private EmployeeRepository employeeRepository = new EmployeeRepository();
+//    private ClientRepository clientRepository = new ClientRepository();
+        ClientRepository clientRepository = ClientRepository.getInstance();
+//    private EmployeeRepository employeeRepository = new EmployeeRepository();
+     EmployeeRepository employeeRepository = EmployeeRepository.getInstance();
     private UserService serviceUser = new UserService(clientRepository, employeeRepository);
 
 
     private OrderRepository orderRepository = new OrderRepository();
     private OrderService orderService = new OrderService(orderRepository);
 
+    public ConsoleApp() throws InvalidDataException {
+    }
 
 
-    public static void main(String args[]) {
+    public static void main(String args[]) throws InvalidDataException {
         ConsoleApp app = new ConsoleApp();
         while (true) {
             app.showMenu();
