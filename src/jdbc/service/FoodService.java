@@ -51,4 +51,12 @@ public class FoodService {
         return suggestedFood;
     }
 
+    public Food getFoodById(int foodId) {
+        for (Food food : foodRepository.getAll()) {
+            if (food.getId() == foodId) {
+                return food;
+            }
+        }
+        return null;
+    }
 }

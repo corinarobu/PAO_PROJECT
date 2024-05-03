@@ -24,10 +24,10 @@ public class ConsoleApp {
     private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 
 
-//    private ClientRepository clientRepository = new ClientRepository();
-        ClientRepository clientRepository = ClientRepository.getInstance();
-//    private EmployeeRepository employeeRepository = new EmployeeRepository();
-     EmployeeRepository employeeRepository = EmployeeRepository.getInstance();
+    private ClientRepository clientRepository = new ClientRepository();
+//        ClientRepository clientRepository = ClientRepository.getInstance();
+    private EmployeeRepository employeeRepository = new EmployeeRepository();
+//     EmployeeRepository employeeRepository = EmployeeRepository.getInstance();
     private UserService serviceUser = new UserService(clientRepository, employeeRepository);
 
 

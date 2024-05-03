@@ -45,11 +45,15 @@ CREATE TABLE food (
 );
 
 
--- Creare tabelul "order"
-CREATE TABLE "order" (
-                         id INT PRIMARY KEY,
-                         paymentMethod VARCHAR2(255),
-                         desiredArrivalTime VARCHAR2(255)
+-- Creare tabelul orders
+CREATE TABLE orders (
+                        id INT PRIMARY KEY,
+                        paymentMethod VARCHAR(255),
+                        desiredArrivalTime VARCHAR(255),
+                        foodItemId INT,
+                        drinkItemId INT,
+                        FOREIGN KEY (foodItemId) REFERENCES food(id),
+                        FOREIGN KEY (drinkItemId) REFERENCES drink(id)
 );
 
 
@@ -77,7 +81,7 @@ CREATE TABLE review (
 CREATE TABLE Order_Food (
                             order_id INT,
                             food_id INT,
-                            FOREIGN KEY (order_id) REFERENCES "order"(id),
+                            FOREIGN KEY (order_id) REFERENCES orders(id),
                             FOREIGN KEY (food_id) REFERENCES food(id)
 );
 
@@ -85,7 +89,7 @@ CREATE TABLE Order_Food (
 CREATE TABLE Order_Drink (
                              order_id INT,
                              drink_id INT,
-                             FOREIGN KEY (order_id) REFERENCES "order"(id),
+                             FOREIGN KEY (order_id) REFERENCES orders(id),
                              FOREIGN KEY (drink_id) REFERENCES drink(id)
 );
 

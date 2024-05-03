@@ -45,7 +45,7 @@ public class ReviewRepository implements GenericRepository<Review>{
     public Review get(int id) {
         String selectQuery = """
                
-                SELECT id, rating, comment, userAge
+                SELECT  rating, comment, userAge
                     FROM review 
                     WHERE id = ?
                 """;
@@ -73,7 +73,7 @@ public class ReviewRepository implements GenericRepository<Review>{
     @Override
     public ArrayList<Review> getAll() {
         String selectQuery = """
-                    SELECT id, rating, comment, userAge 
+                    SELECT rating, comment, userAge 
                     FROM review 
                 """;
         try{

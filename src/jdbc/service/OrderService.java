@@ -1,87 +1,65 @@
 package jdbc.service;
 
+import jdbc.model.Drink;
+import jdbc.model.Food;
 import jdbc.model.Order;
 import jdbc.persistence.OrderRepository;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Scanner;
 
 public class OrderService {
     private OrderRepository orderRepository;
-    private List<Order> processedOrdersList;
-
-    private FoodService foodService = new FoodService();
+    private Order processedOrder;
 
 
-    private DrinkService drinkService = new DrinkService();
+    private FoodService foodService;
+    private DrinkService drinkService;
 
+    public OrderService(OrderRepository orderRepository, FoodService foodService, DrinkService drinkService) {
+        this.orderRepository = orderRepository;
+        this.foodService = foodService;
+        this.drinkService = drinkService;
+    }
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.processedOrdersList = new ArrayList<>();
+        this.foodService = new FoodService(); // Inițializați foodService aici
+        this.drinkService = new DrinkService(); // Inițializați drinkService aici
     }
 
-    public void addOrder(List<String> foodList, List<String> drinkList, String paymentMethod, String desiredArrivalTime) {
-        Order newOrder = new Order(foodList, drinkList, paymentMethod, desiredArrivalTime);
+
+
+    public void addOrder(String paymentMethod, String desiredArrivalTime, int foodId, int drinkId) {
+        Food foodItem = foodService.getFoodById(foodId);
+        Drink drinkItem = drinkService.getDrinkById(drinkId);
+        Order newOrder = new Order(paymentMethod, desiredArrivalTime, foodItem, drinkItem);
         orderRepository.add(newOrder);
-    }
-
-    public List<Order> getAllOrders() {
-        return orderRepository.getAll();
     }
 
     public void placeOrder() {
         Scanner scanner = new Scanner(System.in);
 
-        while (true) {
-            System.out.print("Enter the number of food items: ");
-            int numFoodItems = scanner.nextInt();
-            scanner.nextLine();
+        System.out.print("Enter food id: ");
+        int foodId = scanner.nextInt();
 
-            List<String> foodList = new ArrayList<>();
-            for (int i = 0; i < numFoodItems; i++) {
-                System.out.print("Enter food item " + (i + 1) + ": ");
-                String foodItem = scanner.nextLine();
-                foodList.add(foodItem);
-            }
+        System.out.print("Enter drink id: ");
+        int drinkId = scanner.nextInt();
 
+        scanner.nextLine(); // Consumă newline după nextInt()
 
-            System.out.print("Enter the number of drink items: ");
-            int numDrinkItems = scanner.nextInt();
-            scanner.nextLine();
+        System.out.print("Enter payment method: ");
+        String paymentMethod = scanner.nextLine();
 
+        System.out.print("Enter desired arrival time: ");
+        String desiredArrivalTime = scanner.nextLine();
 
-            List<String> drinkList = new ArrayList<>();
-            for (int i = 0; i < numDrinkItems; i++) {
-                System.out.print("Enter drink item " + (i + 1) + ": ");
-                String drinkItem = scanner.nextLine();
-                drinkList.add(drinkItem);
-            }
-
-             System.out.print("Enter payment method: ");
-            String paymentMethod = scanner.nextLine();
-
-            System.out.print("Enter desired arrival time: ");
-            String desiredArrivalTime = scanner.nextLine();
-
-
-            addOrder(foodList, drinkList, paymentMethod, desiredArrivalTime);
-            System.out.println("Order placed successfully.");
-            break;
-        }
+        addOrder(paymentMethod, desiredArrivalTime, foodId, drinkId);
+        System.out.println("Order placed successfully.");
     }
-
-
-
-
-
-
     public void processOrder() {
-        List<Order> ordersList = orderRepository.getAll();
-        if (!ordersList.isEmpty()) {
-            Order orderToProcess = ordersList.remove(0);
-            processedOrdersList.add(orderToProcess);
+        Order orderToProcess = orderRepository.getNextOrder();
+        if (orderToProcess != null) {
+            processedOrder = orderToProcess;
             orderRepository.delete(orderToProcess);
             System.out.println("Order processed successfully.");
         } else {
@@ -89,51 +67,33 @@ public class OrderService {
         }
     }
 
-
     public void displayPendingOrders() {
-        List<Order> pendingOrders = orderRepository.getAll();
-        if (!pendingOrders.isEmpty()) {
-            System.out.println("Pending Orders:");
-            for (Order order : pendingOrders) {
-                System.out.println("Order ID: " + order.getId());
-                System.out.println("Food items:");
-                for (String food : order.getFoodList()) {
-                    System.out.println("- " + food);
-                }
-                System.out.println("Drink items:");
-                for (String drink : order.getDrinkList()) {
-                    System.out.println("- " + drink);
-                }
-                System.out.println("Payment method: " + order.getPaymentMethod());
-                System.out.println("Desired arrival time: " + order.getDesiredArrivalTime());
-                System.out.println();
-            }
+        Order pendingOrder = orderRepository.getNextOrder();
+        if (pendingOrder != null) {
+            System.out.println("Pending Order:");
+            displayOrderDetails(pendingOrder);
         } else {
             System.out.println("No pending orders.");
         }
     }
 
-    public void displayProcessedOrders() {
-        if (!processedOrdersList.isEmpty()) {
-            System.out.println("Processed Orders:");
-            for (Order order : processedOrdersList) {
-                System.out.println("Order ID: " + order.getId());
-                System.out.println("Food items:");
-                for (String food : order.getFoodList()) {
-                    System.out.println("- " + food);
-                }
-                System.out.println("Drink items:");
-                for (String drink : order.getDrinkList()) {
-                    System.out.println("- " + drink);
-                }
-                System.out.println("Payment method: " + order.getPaymentMethod());
-                System.out.println("Desired arrival time: " + order.getDesiredArrivalTime());
-                System.out.println();
-            }
-        } else {
-            System.out.println("No processed orders yet.");
-        }
+
+    private void displayOrderDetails(Order order) {
+        System.out.println("Order ID: " + order.getId());
+        System.out.println("Food item: " + order.getFoodItem());
+        System.out.println("Drink item: " + order.getDrinkItem());
+        System.out.println("Payment method: " + order.getPaymentMethod());
+        System.out.println("Desired arrival time: " + order.getDesiredArrivalTime());
+        System.out.println();
     }
 
+    public void displayProcessedOrders() {
+        if (processedOrder != null) {
+        System.out.println("Processed Order:");
+        displayOrderDetails(processedOrder);
+    } else {
+        System.out.println("No processed orders yet.");
+    }
 
+    }
 }

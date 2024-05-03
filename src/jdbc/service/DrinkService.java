@@ -1,6 +1,7 @@
 package jdbc.service;
 
 import jdbc.model.Drink;
+import jdbc.model.Food;
 import jdbc.persistence.DrinkRepository;
 
 import java.util.ArrayList;
@@ -47,6 +48,15 @@ public class DrinkService {
         }
 
         return suggestedDrinks;
+    }
+
+    public Drink getDrinkById(int drinkId) {
+        for (Drink drink : drinkRepository.getAll()) {
+            if (drink.getId() == drinkId) {
+                return drink;
+            }
+        }
+        return null;
     }
 
 }

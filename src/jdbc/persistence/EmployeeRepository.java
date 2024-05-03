@@ -11,7 +11,7 @@ import java.util.ArrayList;
 
 public class EmployeeRepository implements GenericRepository<Employee> {
     private static EmployeeRepository instance = null;
-    private EmployeeRepository() {}
+    public EmployeeRepository() {}
 
     public static EmployeeRepository getInstance(){
         if(instance == null){

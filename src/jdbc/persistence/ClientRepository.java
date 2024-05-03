@@ -13,7 +13,7 @@ public class ClientRepository implements GenericRepository<Client> {
     private static ClientRepository instance = null;
 //    private Connection connection; // Adăugăm conexiunea ca membru al clasei
 
-    private ClientRepository() {
+    public ClientRepository() {
 //        connection = DatabaseConfiguration.getContext();
     }
 

@@ -1,32 +1,24 @@
 package jdbc.model;
 
-import java.util.List;
 public class Order {
     static private int idCounter = 0;
     private int id;
-    private List<String> foodList;
-    private List<String> drinkList;
     private String paymentMethod;
     private String desiredArrivalTime;
+    private Food foodItem;
+    private Drink drinkItem;
 
-    public Order(List<String> foodList, List<String> drinkList, String paymentMethod, String desiredArrivalTime) {
+    public Order(String paymentMethod, String desiredArrivalTime, Food foodItem, Drink drinkItem) {
         ++idCounter;
         this.id = idCounter;
-        this.foodList = foodList;
-        this.drinkList = drinkList;
         this.paymentMethod = paymentMethod;
         this.desiredArrivalTime = desiredArrivalTime;
+        this.foodItem = foodItem;
+        this.drinkItem = drinkItem;
     }
 
     public int getId() {
         return id;
-    }
-    public List<String> getFoodList() {
-        return foodList;
-    }
-
-    public List<String> getDrinkList() {
-        return drinkList;
     }
 
     public String getPaymentMethod() {
@@ -37,4 +29,11 @@ public class Order {
         return desiredArrivalTime;
     }
 
+    public Food getFoodItem() {
+        return foodItem;
+    }
+
+    public Drink getDrinkItem() {
+        return drinkItem;
+    }
 }
