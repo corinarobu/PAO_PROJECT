@@ -7,12 +7,18 @@ import java.lang.String;
 public class Client extends App_User {
     private int client_id;
     private String address;
-
+    private List<Review> reviews;
 
     public Client(int user_id, String username, String email, String password, String phoneNumber, int age, int client_id, String address) {
         super(user_id,username, email, password, phoneNumber, age);
         this.client_id = client_id;
         this.address = address;
+        this.reviews = new ArrayList<>();
+    }
+
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
     }
 
     public void setClinet_id(int client_id) {
@@ -48,4 +54,7 @@ public class Client extends App_User {
                 '}';
     }
 
+    public void setClient_id(int clientSequence) {
+        this.client_id = clientSequence;
+    }
 }

@@ -4,14 +4,15 @@ import jdbc.model.Client;
 import oracle.jdbc.OraclePreparedStatement;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ClientRepository implements GenericRepository<Client> {
+public class ClientRepository extends AbstractRepository<Client> {
+
     private static ClientRepository instance = null;
-    private Connection connection; // Adăugăm conexiunea ca membru al clasei
 
     public ClientRepository() {
         connection = DatabaseConfiguration.getConnection();
@@ -26,13 +27,9 @@ public class ClientRepository implements GenericRepository<Client> {
 
     @Override
     public void add(Client obj) {
-
-        String insertUser = """
-                INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)
-                """;
-        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
-                DatabaseConfiguration.getConnection().prepareStatement(insertUser)) {
-
+        String insertUser = "INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)";
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                connection.prepareStatement(insertUser)) {
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getEmail());
@@ -40,39 +37,26 @@ public class ClientRepository implements GenericRepository<Client> {
             preparedStatement.setString(4, obj.getPhoneNumber());
             preparedStatement.setInt(5, obj.getAge());
 
-
             preparedStatement.executeUpdate();
 
             obj.setUser_id(retrieveLastId("USER_SEQUENCE"));
-
-
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        String insertPod = """
-                INSERT INTO client VALUES(client_sequence.nextval, ?, ?)
-                """;
-        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
-                DatabaseConfiguration.getConnection().prepareStatement(insertPod)) {
 
+        String insertPod = "INSERT INTO client VALUES(client_sequence.nextval, ?, ?)";
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                connection.prepareStatement(insertPod)) {
 
             preparedStatement.setInt(1, obj.getUser_id());
             preparedStatement.setString(2, obj.getAddress());
 
             preparedStatement.executeUpdate();
-            obj.setClinet_id(retrieveLastId("CLIENT_SEQUENCE"));
+            obj.setClient_id(retrieveLastId("CLIENT_SEQUENCE"));
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
-
-
-
-
-
-
-
-
 
     @Override
     public Client get(int id) {
@@ -115,37 +99,36 @@ public class ClientRepository implements GenericRepository<Client> {
     @Override
     public ArrayList<Client> getAll() {
         String selectQuery = """
-        SELECT u.user_id, u.username, u.email,
-                u.age, u.phoneNumber, u.password,
-                c.client_id, c.address
-        FROM App_User u, client c WHERE u.user_id = c.user_id
-        """;
-        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
-                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
-
-
-            ResultSet res = preparedStatement.executeQuery();
+            SELECT u.user_id, u.username, u.email,
+                   u.age, u.phoneNumber, u.password,
+                   c.client_id, c.address
+            FROM App_User u, client c 
+            WHERE u.user_id = c.user_id
+            """;
+        try (PreparedStatement preparedStatement = connection.prepareStatement(selectQuery)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
 
             ArrayList<Client> clients = new ArrayList<>();
 
-            while (res.next()) {
+            while (resultSet.next()) {
                 Client client = new Client(
-                        res.getInt(1),
-                        res.getString(2),
-                        res.getString(3),
-                        res.getString(4),
-                        res.getString(5),
-                        res.getInt(6),
-                        res.getInt(7),
-                        res.getString(8)
+                        resultSet.getInt("user_id"),
+                        resultSet.getString("username"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password"),
+                        resultSet.getString("phoneNumber"),
+                        resultSet.getInt("age"),
+                        resultSet.getInt("client_id"),
+                        resultSet.getString("address")
                 );
                 clients.add(client);
             }
             return clients;
-    }catch (SQLException ex){
-        throw new RuntimeException(ex);
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
-    }
+
 
     @Override
     public void update(Client obj) {
@@ -227,4 +210,21 @@ public class ClientRepository implements GenericRepository<Client> {
         }
     }
 
+    public int getLastUserId() {
+        int lastUserId = 0;
+        String query = "SELECT MAX(user_id) FROM App_user";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                lastUserId = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Tratarea excepțiilor sau logarea lor
+        }
+
+        return lastUserId;
+    }
 }

@@ -67,9 +67,9 @@ public class ConsoleApp {
 
 
 
-        private void execute(int option) {
-            String actionName = getActionNameForOption(option);
-            loggerService.logAction(actionName);
+    private void execute(int option) {
+        String actionName = getActionNameForOption(option);
+        loggerService.logAction(actionName);
 
         switch (option) {
             case 1:

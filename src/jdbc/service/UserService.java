@@ -8,6 +8,7 @@ import jdbc.model.Review;
 
 import jdbc.persistence.EmployeeRepository;
 import jdbc.persistence.ClientRepository;
+import jdbc.persistence.ReviewRepository;
 
 
 import java.util.ArrayList;
@@ -17,23 +18,27 @@ import java.util.Scanner;
 
 public class UserService {
 
-    private List<App_User> userList = new ArrayList<>();
+//    private List<App_User> userList = new ArrayList<>();
     private ClientRepository clientRepository;
     private EmployeeRepository employeeRepository;
     private Scanner scanner;
-    private List<Client> clientList;
-    private List<Employee> employeeList;
+//    private List<Client> clientList;
+//    private List<Employee> employeeList;
 
     private List<Review> reviewList = new ArrayList<>();
 
+    private ReviewRepository reviewRepository;
 
+    public void setReviewRepository(ReviewRepository reviewRepository) {
+        this.reviewRepository = reviewRepository;
+    }
 
     public UserService(ClientRepository clientRepository, EmployeeRepository employeeRepository) throws InvalidDataException {
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.scanner = new Scanner(System.in);
-        this.clientList = clientRepository.getAll();
-        this.employeeList = employeeRepository.getAll();
+//        this.clientList = clientRepository.getAll();
+//        this.employeeList = employeeRepository.getAll();
     }
 
     public void addUser() {
@@ -56,9 +61,9 @@ public class UserService {
     }
 
 
-    public void addUser(App_User user) {
-            userList.add(user);
-    }
+//    public void addUser(App_User user) {
+//        userList.add(user);
+//    }
 
     private int readOption() {
         try {
@@ -80,21 +85,22 @@ public class UserService {
         String phoneNumber = scanner.nextLine();
         System.out.println("Introduceți vârsta clientului:");
         int age = Integer.parseInt(scanner.nextLine());
-
-        System.out.println("Introduceți id-ul userului:");
-        int user_id = Integer.parseInt(scanner.nextLine());
         System.out.println("Introduceți adresa clientului:");
         String address = scanner.nextLine();
 
-        System.out.println("Introduceți id-ul clientului:");
-        int client_id = Integer.parseInt(scanner.nextLine());
 
-        App_User user = new Client(user_id, username, email, password, phoneNumber, age, client_id, address);
+        int lastUserId = clientRepository.getLastUserId();
+        int user_id = lastUserId + 1;
 
+        // Crearea unui obiect Client folosind constructorul specificat
+        Client client = new Client(user_id, username, email, password, phoneNumber, age, user_id, address);
 
-        addUser(user);
+        // Adăugarea clientului în baza de date utilizând repository-ul clientRepository
+        clientRepository.add(client);
+
         System.out.println("Client adăugat cu succes.");
     }
+
 
     public void addEmployee() {
         System.out.println("Introduceți numele angajatului:");
@@ -120,28 +126,29 @@ public class UserService {
         System.out.println("Introduceți numărul de ore de lucru zilnice ale angajatului:");
         int dailyWorkHours = Integer.parseInt(scanner.nextLine());
 
-        System.out.println("Introduceți id-ul userului:");
-        int user_id = Integer.parseInt(scanner.nextLine());
-
         System.out.println("Introduceți id-ul angajatului:");
         int employee_id = Integer.parseInt(scanner.nextLine());
 
-        App_User user = new Employee(user_id, username, email, password, phoneNumber, age, employee_id, jobTitle
-                , hiringDate,  salary,  dailyWorkHours);
+        int lastUserId = clientRepository.getLastUserId();
+        int user_id = lastUserId + 1;
 
-        addUser(user);;
+        Employee employee = new Employee(user_id, username, email, password, phoneNumber, age, employee_id, jobTitle, hiringDate, salary, dailyWorkHours);
+
+        employeeRepository.add(employee);
         System.out.println("Angajat adăugat cu succes.");
     }
 
     public void showUsers() {
         System.out.println("Users:");
 
-        for (App_User user : userList) {
-            if (user instanceof Client) {
-                System.out.println("Client: " + user);
-            } else if (user instanceof Employee) {
-                System.out.println("Employee: " + user);
-            }
+        List<Client> clients = clientRepository.getAll();
+        for (Client client : clients) {
+            System.out.println("Client: " + client);
+        }
+
+        List<Employee> employees = employeeRepository.getAll();
+        for (Employee employee : employees) {
+            System.out.println("Employee: " + employee);
         }
     }
 
@@ -149,15 +156,11 @@ public class UserService {
         System.out.print("Enter user ID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        App_User currentUser = null;
-        for (App_User user : userList) {
-            if (user.getId() == userId) {
-                currentUser = user;
-                break;
-            }
-        }
+        // Verificăm dacă utilizatorul este un client sau un angajat
+        Client client = clientRepository.get(userId);
+        Employee employee = employeeRepository.get(userId);
 
-        if (currentUser == null) {
+        if (client == null && employee == null) {
             System.out.println("User with ID " + userId + " not found.");
             return;
         }
@@ -171,15 +174,21 @@ public class UserService {
         System.out.print("Age: ");
         int age = Integer.parseInt(scanner.nextLine());
 
-        // Actualizarea profilului utilizatorului curent
-        currentUser.setPassword(password);
-        currentUser.setPhoneNumber(phoneNumber);
-        currentUser.setAge(age);
-
-        System.out.println("User profile updated successfully.");
+        // Actualizarea profilului utilizatorului curent în baza de date
+        if (client != null) {
+            client.setPassword(password);
+            client.setPhoneNumber(phoneNumber);
+            client.setAge(age);
+            clientRepository.update(client);
+            System.out.println("Client profile updated successfully.");
+        } else if (employee != null) {
+            employee.setPassword(password);
+            employee.setPhoneNumber(phoneNumber);
+            employee.setAge(age);
+            employeeRepository.update(employee);
+            System.out.println("Employee profile updated successfully.");
+        }
     }
-
-
 
 
     public void deleteUser() {
@@ -202,89 +211,44 @@ public class UserService {
         }
     }
 
-    public void deleteUser(App_User user) {
-        userList.remove(user);
-    }
-
     public void deleteClient() {
         System.out.print("Enter client ID: ");
         int clientId = Integer.parseInt(scanner.nextLine());
 
-        App_User userToDelete = null;
-        for (App_User user : userList) {
-            if (user.getId() == clientId) {
-                userToDelete = user;
-                break;
-            }
-        }
-
-        if (userToDelete == null) {
-            System.out.println("User with ID " + clientId + " not found.");
+        Client clientToDelete = clientRepository.get(clientId);
+        if (clientToDelete == null) {
+            System.out.println("Client with ID " + clientId + " not found.");
             return;
         }
 
-        if (!(userToDelete instanceof Client)) {
-            System.out.println("User with ID " + clientId + " is not a client.");
-            return;
-        }
-
-        System.out.println("Are you sure you want to delete this client? (Y/N)");
-        String confirmation = scanner.nextLine().trim();
-
-        if (confirmation.equalsIgnoreCase("Y")) {
-            deleteUser(userToDelete);
-            System.out.println("Client deleted successfully.");
-        } else {
-            System.out.println("Deletion canceled.");
-        }
+        clientRepository.delete(clientToDelete);
+        System.out.println("Client deleted successfully.");
     }
-
 
     public void deleteEmployee() {
         System.out.print("Enter employee ID: ");
         int employeeId = Integer.parseInt(scanner.nextLine());
 
-        App_User userToDelete = null;
-        for (App_User user : userList) {
-            if (user.getId() == employeeId) {
-                userToDelete = user;
-                break;
-            }
-        }
-
-        if (userToDelete == null) {
-            System.out.println("User with ID " + employeeId + " not found.");
+        // Verificăm dacă angajatul există în baza de date
+        Employee employeeToDelete = employeeRepository.get(employeeId);
+        if (employeeToDelete == null) {
+            System.out.println("Employee with ID " + employeeId + " not found.");
             return;
         }
 
-        System.out.println("Are you sure you want to delete this user? (Y/N)");
-        String confirmation = scanner.nextLine().trim();
-
-        if (confirmation.equalsIgnoreCase("Y")) {
-            deleteUser(userToDelete);
-            System.out.println("User deleted successfully.");
-        } else {
-            System.out.println("Deletion canceled.");
-        }
+        // Ștergem angajatul din baza de date
+        employeeRepository.delete(employeeToDelete);
+        System.out.println("Employee deleted successfully.");
     }
-
-
-
 
     public void leaveReview() {
         System.out.print("Introduceți ID-ul dvs. de client: ");
         int clientId = Integer.parseInt(scanner.nextLine());
 
-        Client client = null;
-        for (App_User user : userList) {
-            if (user instanceof Client && user.getId() == clientId) {
-                client = (Client) user;
-                break;
-            }
-        }
-
+        // Verificăm dacă clientul există în baza de date
+        Client client = clientRepository.get(clientId);
         if (client == null) {
-            System.out.println("Clientul cu ID-ul " + clientId + " nu există.");
+            System.out.println("Client with ID " + clientId + " not found.");
             return;
         }
 
@@ -294,27 +258,24 @@ public class UserService {
         System.out.print("Introduceți comentariul dvs.: ");
         String comment = scanner.nextLine();
 
+        // Adăugăm recenzia în baza de date
         Review review = new Review(rating, comment, client.getAge());
-
-//        client.addReview(review);
-
-        reviewList.add(review);
+        reviewRepository.add(review);
 
         System.out.println("Recenzia a fost adăugată cu succes.");
     }
 
-
-
     public void showAllReviews() {
+        List<Review> reviews = reviewRepository.getAll();
 
-        if (reviewList.isEmpty()) {
+        if (reviews.isEmpty()) {
             System.out.println("Nu există recenzii disponibile.");
             return;
         }
 
         System.out.println("Lista de recenzii:");
 
-        for (Review review : reviewList) {
+        for (Review review : reviews) {
             System.out.println("ID: " + review.getId());
             System.out.println("Rating: " + review.getRating());
             System.out.println("Comentariu: " + review.getComment());

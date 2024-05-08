@@ -5,31 +5,25 @@ import jdbc.persistence.ClientRepository;
 import jdbc.persistence.GenericRepository;
 import oracle.jdbc.OraclePreparedStatement;
 
-import java.sql.Date;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 
-public class EmployeeRepository implements GenericRepository<Employee> {
-    private static EmployeeRepository instance = null;
-    public EmployeeRepository() {}
+public class EmployeeRepository extends AbstractRepository<Employee> {
 
-    public static EmployeeRepository getInstance(){
-        if(instance == null){
+    private static EmployeeRepository instance = null;
+
+    public static EmployeeRepository getInstance() {
+        if (instance == null) {
             instance = new EmployeeRepository();
         }
-
         return instance;
     }
 
     @Override
     public void add(Employee obj) {
-        String insertUser = """
-                INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)
-                """;
+        String insertUser = "INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)";
         try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(insertUser)) {
-
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getEmail());
@@ -37,31 +31,26 @@ public class EmployeeRepository implements GenericRepository<Employee> {
             preparedStatement.setString(4, obj.getPhoneNumber());
             preparedStatement.setInt(5, obj.getAge());
 
-
             preparedStatement.executeUpdate();
             obj.setUser_id(retrieveLastId("user_sequence"));
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
-        String insertPod = """
-                INSERT INTO employee VALUES(employee_sequence.nextval, ?, ?, ?, ?, ?)
-                """;
-            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    DatabaseConfiguration.getConnection().prepareStatement(insertPod)) {
 
+        String insertPod = "INSERT INTO employee VALUES(employee_sequence.nextval, ?, ?, ?, ?, ?)";
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertPod)) {
 
-                preparedStatement.setInt(1, obj.getUser_id());
-                preparedStatement.setString(2, obj.getJobTitle());
-                preparedStatement.setDate(3, obj.getHiringDate());
-                preparedStatement.setInt(4, obj.getSalary());
-                preparedStatement.setInt(5, obj.getDailyWorkHours());
+            preparedStatement.setInt(1, obj.getUser_id());
+            preparedStatement.setString(2, obj.getJobTitle());
+            preparedStatement.setDate(3, obj.getHiringDate());
+            preparedStatement.setInt(4, obj.getSalary());
+            preparedStatement.setInt(5, obj.getDailyWorkHours());
 
-                preparedStatement.executeUpdate();
-
-            } catch (SQLException ex) {
-                throw new RuntimeException(ex);
-            }
-
+            preparedStatement.executeUpdate();
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
     }
 //
     @Override
@@ -106,44 +95,44 @@ public class EmployeeRepository implements GenericRepository<Employee> {
         }
     }
 //
-    @Override
-    public ArrayList<Employee> getAll() {
-        String selectQuery = """
-                    SELECT u.user_id, u.username, u.email,
-                u.age, u.phoneNumber, u.password, e.employee_id,
-                   e.jobTitle, e.hiringDate, e.salary, e.dailyWorkHours
-                  FROM employee e, App_User u WHERE e.user_id = u.user_id
-                """;
+@Override
+public ArrayList<Employee> getAll() {
+    String selectQuery = """
+                SELECT u.user_id, u.username, u.email,
+            u.age, u.phoneNumber, u.password, e.employee_id,
+               e.jobTitle, e.hiringDate, e.salary, e.dailyWorkHours
+              FROM employee e, App_User u WHERE e.user_id = u.user_id
+            """;
 
-        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+    try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+            DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
 
 
-            ResultSet res = preparedStatement.executeQuery();
+        ResultSet res = preparedStatement.executeQuery();
 
-            ArrayList<Employee> employees = new ArrayList<>();
+        ArrayList<Employee> employees = new ArrayList<>();
 
-            while(res.next()){
-                Employee employee = new Employee(
-                        res.getInt(1),
-                        res.getString(2),
-                        res.getString(3),
-                        res.getString(4),
-                        res.getString(5),
-                        res.getInt(6),
-                        res.getInt(7),
-                        res.getString(8),
-                        res.getDate(9),
-                        res.getInt(10),
-                        res.getInt(11)
-                );
-                employees.add(employee);
-            }
-            return employees;
-        }catch (SQLException ex){
-            throw new RuntimeException(ex);
+        while(res.next()){
+            Employee employee = new Employee(
+                    res.getInt("user_id"),
+                    res.getString("username"),
+                    res.getString("email"),
+                    res.getString("password"),
+                    res.getString("phoneNumber"),
+                    Integer.parseInt(res.getString("age")),
+                    res.getInt("employee_id"),
+                    res.getString("jobTitle"),
+                    res.getDate("hiringDate"),
+                    res.getInt("salary"),
+                    res.getInt("dailyWorkHours")
+            );
+            employees.add(employee);
         }
+        return employees;
+    }catch (SQLException ex){
+        throw new RuntimeException(ex);
     }
+}
 
     @Override
     public void update(Employee obj) {
@@ -225,5 +214,23 @@ public class EmployeeRepository implements GenericRepository<Employee> {
         }catch (SQLException ex){
             throw new RuntimeException(ex);
         }
+    }
+
+    public int getLastUserId() {
+        int lastUserId = 0;
+        String query = "SELECT MAX(user_id) FROM users";
+
+        try (PreparedStatement statement = connection.prepareStatement(query);
+             ResultSet resultSet = statement.executeQuery()) {
+
+            if (resultSet.next()) {
+                lastUserId = resultSet.getInt(1);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            // Tratarea excepțiilor sau logarea lor
+        }
+
+        return lastUserId;
     }
 }

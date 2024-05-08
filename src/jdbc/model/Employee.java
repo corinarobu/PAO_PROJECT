@@ -1,7 +1,9 @@
 package jdbc.model;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.lang.String;
+import java.util.List;
 
 public class Employee extends App_User {
     private int employee_id;
@@ -9,6 +11,7 @@ public class Employee extends App_User {
     private Date hiringDate;
     private int salary;
     private int dailyWorkHours;
+    private List<Review> reviews;
 
     public Employee(int user_id, String username, String email, String password, String phoneNumber, int age, int employee_id, String jobTitle, Date hiringDate, int salary, int dailyWorkHours) {
         super(user_id, username, email, password, phoneNumber, age);
@@ -17,6 +20,11 @@ public class Employee extends App_User {
         this.hiringDate = hiringDate;
         this.salary = salary;
         this.dailyWorkHours = dailyWorkHours;
+        this.reviews = new ArrayList<>();
+    }
+
+    public java.sql.Date getHiringDate() {
+        return new java.sql.Date(hiringDate.getTime());
     }
 
     public int getUser_id() {
@@ -38,10 +46,6 @@ public class Employee extends App_User {
         this.age = age;
     }
 
-
-    public java.sql.Date getHiringDate() {
-        return (java.sql.Date) hiringDate;
-    }
 
     public void setHiringDate(Date hiringDate) {
         this.hiringDate = hiringDate;
@@ -83,5 +87,9 @@ public class Employee extends App_User {
 
     public int getEmployee_id() {
         return employee_id;
+    }
+
+    public void addReview(Review review) {
+        this.reviews.add(review);
     }
 }
