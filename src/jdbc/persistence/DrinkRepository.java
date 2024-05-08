@@ -3,6 +3,7 @@ package jdbc.persistence;
 
 import config.DatabaseConfiguration;
 import jdbc.model.Drink;
+import jdbc.model.Food;
 import oracle.jdbc.OraclePreparedStatement;
 
 import java.sql.PreparedStatement;
@@ -61,13 +62,21 @@ public class DrinkRepository implements GenericRepository<Drink> {
             ResultSet res = preparedStatement.executeQuery();
 
             if(res.next()){
-                return new Drink(
+//                return new Drink(
+//
+//                        res.getString(1),
+//                        res.getInt(2),
+//                        res.getInt(3),
+//                        res.getInt(4)
+//                );
 
-                        res.getString(1),
-                        res.getInt(2),
-                        res.getInt(3),
-                        res.getInt(4)
-                );
+
+                String name = res.getString("name");
+                int price = res.getInt("price");
+                int alcholic = res.getInt("alcholic");
+                int calories = res.getInt("calories");
+                return new Drink(name, price, alcholic, calories);
+
             }else{
                 throw new RuntimeException();
             }

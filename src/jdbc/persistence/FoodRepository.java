@@ -24,58 +24,60 @@ public class FoodRepository implements GenericRepository<Food> {
     @Override
     public void add(Food obj) {
         String insertStatement = """
-                INSERT INTO food
-                VALUES(food_sequence.nextval,?,?,?,?)
-                """;
+            INSERT INTO food
+            VALUES(food_sequence.nextval,?,?,?,?)
+            """;
 
-            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
 
-
-                preparedStatement.setString(1,obj.getName());
+            preparedStatement.setString(1, obj.getName());
             preparedStatement.setInt(2, obj.getPrice());
             preparedStatement.setInt(3, obj.isVegetarian());
             preparedStatement.setInt(4, obj.getCalories());
 
             preparedStatement.executeUpdate();
 
-        }catch (SQLException ex){
+            ResultSet generatedKeys = preparedStatement.getGeneratedKeys();
+            if (generatedKeys.next()) {
+                obj.setId(generatedKeys.getInt(1));
+            }
+
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public Food get(int id) {
         String selectQuery = """
-                
-                SELECT id, name, price, vegetarian, calories
-                    FROM food 
-                    WHERE id = ?
-                """;
+        SELECT id, name, price, vegetarian, calories
+        FROM food 
+        WHERE id = ?
+    """;
 
-            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
 
-
-                preparedStatement.setInt(1, id);
-
+            preparedStatement.setInt(1, id);
             ResultSet res = preparedStatement.executeQuery();
 
-            if(res.next()){
-                return new Food(
-                        res.getString(1),
-                        res.getInt(2),
-                        res.getInt(3),
-                        res.getInt(4)
-
-                );
-            }else{
-                throw new RuntimeException();
+            if (res.next()) {
+                String name = res.getString("name");
+                int price = res.getInt("price");
+                int vegetarian = res.getInt("vegetarian");
+                int calories = res.getInt("calories");
+                return new Food(name, price, vegetarian, calories);
+            } else {
+                // Dacă nu există nicio înregistrare cu id-ul dat, aruncăm o excepție
+                throw new RuntimeException("Food not found for id: " + id);
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public ArrayList<Food> getAll() {

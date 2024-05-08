@@ -18,21 +18,17 @@ public class ConsoleApp {
     private FoodService serviceFood = new FoodService();
     private DrinkService serviceDrink = new DrinkService();
 
-
     private RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 
-
     private ClientRepository clientRepository = new ClientRepository();
-//        ClientRepository clientRepository = ClientRepository.getInstance();
     private EmployeeRepository employeeRepository = new EmployeeRepository();
-//     EmployeeRepository employeeRepository = EmployeeRepository.getInstance();
     private UserService serviceUser = new UserService(clientRepository, employeeRepository);
-
 
     private OrderRepository orderRepository = new OrderRepository();
     private OrderService orderService = new OrderService(orderRepository);
 
+    private CSVLoggerService loggerService = new CSVLoggerService();
     public ConsoleApp() throws InvalidDataException {
     }
 
@@ -67,7 +63,14 @@ public class ConsoleApp {
         System.out.println("17. Exit");
     }
 
-    private void execute(int option) {
+
+
+
+
+        private void execute(int option) {
+            String actionName = getActionNameForOption(option);
+            loggerService.logAction(actionName);
+
         switch (option) {
             case 1:
                 serviceFood.addFood();
@@ -111,9 +114,7 @@ public class ConsoleApp {
                 }
                 break;
             case 13:
-                System.out.print("Introduceți tipul de bucătărie pentru căutare: ");
-                String cuisineType = scanner.nextLine();
-                serviceRestaurant.searchRestaurantsByCuisineType(cuisineType);
+                serviceRestaurant.searchRestaurantsByCuisineType();
                 break;
 
             case 14:
@@ -150,6 +151,48 @@ public class ConsoleApp {
                 System.exit(0);
         }
     }
+
+    private String getActionNameForOption(int option) {
+        switch (option) {
+            case 1:
+                return "Add Food";
+            case 2:
+                return "Show Foods";
+            case 3:
+                return "Add Drink";
+            case 4:
+                return "Show Drinks";
+            case 5:
+                return "Add User";
+            case 6:
+                return "Show Users";
+            case 7:
+                return "Place Order";
+            case 8:
+                return "View Placed Orders";
+            case 9:
+                return "Process Order";
+            case 10:
+                return "View Processed Orders";
+            case 11:
+                return "Update Profile";
+            case 12:
+                return "Add Review";
+            case 13:
+                return "Search for Restaurants";
+            case 14:
+                return "Delete Client";
+            case 15:
+                return "Add Restaurant";
+            case 16:
+                return "Suggest Food and Drink by Price";
+            case 17:
+                return "Exit";
+            default:
+                return "Unknown Action";
+        }
+    }
+
 
     private int readOption() {
         try {

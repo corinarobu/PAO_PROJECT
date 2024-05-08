@@ -56,16 +56,19 @@ public class OrderService {
         addOrder(paymentMethod, desiredArrivalTime, foodId, drinkId);
         System.out.println("Order placed successfully.");
     }
+
+
     public void processOrder() {
         Order orderToProcess = orderRepository.getNextOrder();
         if (orderToProcess != null) {
             processedOrder = orderToProcess;
-            orderRepository.delete(orderToProcess);
+            orderRepository.delete(orderToProcess); // Șterge comanda procesată din repository
             System.out.println("Order processed successfully.");
         } else {
             System.out.println("No orders to process.");
         }
     }
+
 
     public void displayPendingOrders() {
         Order pendingOrder = orderRepository.getNextOrder();

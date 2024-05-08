@@ -162,6 +162,7 @@ public class UserService {
             return;
         }
 
+        // Citirea noilor detalii de utilizator
         System.out.println("Enter new user details:");
         System.out.print("Password: ");
         String password = scanner.nextLine();
@@ -170,6 +171,7 @@ public class UserService {
         System.out.print("Age: ");
         int age = Integer.parseInt(scanner.nextLine());
 
+        // Actualizarea profilului utilizatorului curent
         currentUser.setPassword(password);
         currentUser.setPhoneNumber(phoneNumber);
         currentUser.setAge(age);

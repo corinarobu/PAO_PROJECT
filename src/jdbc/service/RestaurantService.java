@@ -34,7 +34,10 @@ public class RestaurantService {
         System.out.println("Restaurant adăugat cu succes.");
     }
 
-    public void searchRestaurantsByCuisineType(String cuisineType) {
+    public void searchRestaurantsByCuisineType() {
+        System.out.print("Introduceți tipul de bucătărie pentru căutare: ");
+        String cuisineType = scanner.nextLine().trim();
+
         List<Restaurant> restaurants = restaurantRepository.getAll();
 
         List<Restaurant> matchingRestaurants = new ArrayList<>();
@@ -53,4 +56,7 @@ public class RestaurantService {
             System.out.println("Nu există restaurante în categoria \"" + cuisineType + "\".");
         }
     }
+
+
+
 }

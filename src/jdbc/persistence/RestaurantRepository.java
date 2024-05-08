@@ -1,6 +1,7 @@
 package jdbc.persistence;
 
 import config.DatabaseConfiguration;
+import jdbc.model.Order;
 import jdbc.model.Restaurant;
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -23,26 +24,25 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
     @Override
     public void add(Restaurant obj) {
         String insertStatement = """
-                INSERT INTO restaurant
-                VALUES(order_sequence.nextval,?,?,?, ?, ?)
-                """;
+            INSERT INTO restaurant
+            VALUES(restaurant_sequence.nextval, ?, ?, ?, ?, ?)
+            """;
         try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
 
-
-
-            preparedStatement.setString(2,obj.getName());
-            preparedStatement.setString(3, obj.getAddress());
+            preparedStatement.setString(1, obj.getName());
+            preparedStatement.setString(2, obj.getAddress());
             preparedStatement.setInt(3, obj.getEstablishmentYear());
-            preparedStatement.setString(3, obj.getCuisineType());
-            preparedStatement.setString(3, obj.getOpeningHours());
+            preparedStatement.setString(4, obj.getCuisineType());
+            preparedStatement.setString(5, obj.getOpeningHours());
 
             preparedStatement.executeUpdate();
 
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public Restaurant get(int id) {
@@ -75,20 +75,20 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
         }
     }
 
+
     @Override
     public ArrayList<Restaurant> getAll() {
         String selectQuery = """
-                    SELECT id, name, address, establishmentYear ,  cuisineType, openingHours
-                    FROM restaurant 
-                """;
+            SELECT name, address, establishmentYear, cuisineType, openingHours
+            FROM restaurant
+        """;
         try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
-
 
             ResultSet res = preparedStatement.executeQuery();
 
             ArrayList<Restaurant> restaurants = new ArrayList<>();
-            while(res.next()) {
+            while (res.next()) {
                 Restaurant restaurant = new Restaurant(
                         res.getString(1),
                         res.getString(2),
@@ -99,35 +99,36 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                 restaurants.add(restaurant);
             }
             return restaurants;
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
 
+
+
     @Override
     public void update(Restaurant obj) {
         String updateStatement = """
-                UPDATE restaurant
-                SET
-                    name = ?,
-                    address = ?, 
-                  establishmentYear = ?,
-                 cuisineType = ?,  
+            UPDATE restaurant
+            SET
+                name = ?,
+                address = ?, 
+                establishmentYear = ?,
+                cuisineType = ?,  
                 openingHours = ?
          
-                WHERE
-                    id = ?
-                """;
+            WHERE
+                id = ?
+            """;
         try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(updateStatement)) {
 
-
             preparedStatement.setString(1, obj.getName());
             preparedStatement.setString(2, obj.getAddress());
-            preparedStatement.setInt(2, obj.getEstablishmentYear());
-            preparedStatement.setString(2, obj.getCuisineType());
-            preparedStatement.setString(2, obj.getOpeningHours());
-
+            preparedStatement.setInt(3, obj.getEstablishmentYear());
+            preparedStatement.setString(4, obj.getCuisineType());
+            preparedStatement.setString(5, obj.getOpeningHours());
+            preparedStatement.setInt(6, obj.getId());
 
             preparedStatement.executeUpdate();
 
@@ -135,6 +136,7 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
             throw new RuntimeException(ex);
         }
     }
+
 
     @Override
     public void delete(Restaurant obj) {

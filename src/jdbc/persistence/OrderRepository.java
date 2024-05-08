@@ -141,21 +141,30 @@ public class OrderRepository implements GenericRepository<Order> {
     @Override
     public void delete(Order obj) {
         String deleteStatement = """
-                DELETE FROM orders
-                WHERE id = ?
-                """;
+            DELETE FROM orders
+            WHERE id = ?
+            """;
         try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
 
-
             preparedStatement.setInt(1, obj.getId());
+            int deletedRows = preparedStatement.executeUpdate();
 
-            preparedStatement.executeUpdate();
+            if (deletedRows == 1) {
+                orders.remove(obj); // Șterge comanda din lista locală
+                System.out.println("Order deleted successfully.");
+            } else {
+                throw new RuntimeException("Failed to delete order.");
+            }
 
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
     }
+
+
+
+
 
     public Order getNextOrder() {
         if (!orders.isEmpty()) {

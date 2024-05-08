@@ -54,4 +54,8 @@ public class Food {
     }
 
 
+    public void setId(int anInt) {
+        this.id = anInt;
+
+    }
 }

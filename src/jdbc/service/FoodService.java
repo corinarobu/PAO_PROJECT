@@ -51,12 +51,16 @@ public class FoodService {
         return suggestedFood;
     }
 
+
     public Food getFoodById(int foodId) {
-        for (Food food : foodRepository.getAll()) {
-            if (food.getId() == foodId) {
-                return food;
-            }
+        try {
+            // Folosim metoda din FoodRepository pentru a obține alimentul
+            return foodRepository.get(foodId);
+        } catch (RuntimeException ex) {
+            // Dacă nu putem găsi alimentul, aruncăm o excepție cu un mesaj corespunzător
+            throw new RuntimeException("Food not found for id: " + foodId);
         }
-        return null;
     }
+
+
 }

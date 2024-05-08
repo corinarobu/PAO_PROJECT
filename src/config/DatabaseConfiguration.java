@@ -15,9 +15,11 @@ public class DatabaseConfiguration{
         try {
             if (databaseConnection == null || databaseConnection.isClosed()) {
                 databaseConnection = DriverManager.getConnection(URL, USER, PASSWROD);
+                System.out.println("connexiune buna");
             }
         } catch (SQLException e) {
             e.printStackTrace();
+            System.out.println("nu e conexiune");
         }
         return databaseConnection;
     }
