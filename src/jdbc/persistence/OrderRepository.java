@@ -1,5 +1,6 @@
 package jdbc.persistence;
 
+import config.DatabaseConfiguration;
 import jdbc.model.Drink;
 import jdbc.model.Food;
 import jdbc.model.Order;
@@ -33,8 +34,9 @@ public class OrderRepository implements GenericRepository<Order> {
                 INSERT INTO orders
                 VALUES (order_sequence.nextval,?, ?, ?, ?)
                 """;
-        try {
-            PreparedStatement preparedStatement = dbConnection.getContext().prepareStatement(insertStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
+
 
             preparedStatement.setString(1, obj.getPaymentMethod());
             preparedStatement.setString(2, obj.getDesiredArrivalTime());
@@ -56,8 +58,9 @@ public class OrderRepository implements GenericRepository<Order> {
                 FROM orders 
                 WHERE id = ?
                 """;
-        try {
-            PreparedStatement preparedStatement = dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
             preparedStatement.setInt(1, id);
 
             ResultSet res = preparedStatement.executeQuery();
@@ -85,8 +88,9 @@ public class OrderRepository implements GenericRepository<Order> {
                 SELECT paymentMethod, desiredArrivalTime, foodItemId, drinkItemId
                 FROM orders 
                 """;
-        try {
-            PreparedStatement preparedStatement = dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -120,9 +124,9 @@ public class OrderRepository implements GenericRepository<Order> {
                 WHERE
                     id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatement)) {
+
 
             preparedStatement.setString(1, obj.getPaymentMethod());
             preparedStatement.setString(2, obj.getDesiredArrivalTime());
@@ -140,9 +144,9 @@ public class OrderRepository implements GenericRepository<Order> {
                 DELETE FROM orders
                 WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
+
 
             preparedStatement.setInt(1, obj.getId());
 

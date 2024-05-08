@@ -19,7 +19,6 @@ public class ConsoleApp {
     private DrinkService serviceDrink = new DrinkService();
 
 
-
     private RestaurantRepository restaurantRepository = new RestaurantRepository();
     private RestaurantService serviceRestaurant = new RestaurantService(restaurantRepository);
 

@@ -1,5 +1,6 @@
 package jdbc.persistence;
 
+import config.DatabaseConfiguration;
 import jdbc.model.Restaurant;
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -25,9 +26,9 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                 INSERT INTO restaurant
                 VALUES(order_sequence.nextval,?,?,?, ?, ?)
                 """;
-        try{
-            PreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
+
 
 
             preparedStatement.setString(2,obj.getName());
@@ -51,9 +52,9 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                     FROM restaurant 
                     WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
             preparedStatement.setInt(1, id);
 
             ResultSet res = preparedStatement.executeQuery();
@@ -80,9 +81,9 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                     SELECT id, name, address, establishmentYear ,  cuisineType, openingHours
                     FROM restaurant 
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -117,9 +118,9 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                 WHERE
                     id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatement)) {
+
 
             preparedStatement.setString(1, obj.getName());
             preparedStatement.setString(2, obj.getAddress());
@@ -141,9 +142,8 @@ public class RestaurantRepository implements GenericRepository<Restaurant> {
                 DELETE FROM restaurant
                 WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
 
             preparedStatement.setInt(1, obj.getId());
 

@@ -1,4 +1,5 @@
 package jdbc.persistence;
+import config.DatabaseConfiguration;
 import jdbc.model.Employee;
 import jdbc.persistence.ClientRepository;
 import jdbc.persistence.GenericRepository;
@@ -26,8 +27,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
         String insertUser = """
                 INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)
                 """;
-        try {
-            oracle.jdbc.internal.OraclePreparedStatement preparedStatement = (oracle.jdbc.internal.OraclePreparedStatement) dbConnection.getContext().prepareStatement(insertUser);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertUser)) {
+
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getEmail());
@@ -38,31 +40,29 @@ public class EmployeeRepository implements GenericRepository<Employee> {
 
             preparedStatement.executeUpdate();
             obj.setUser_id(retrieveLastId("user_sequence"));
-        }
-        catch (SQLException ex) {
+        } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
         String insertPod = """
                 INSERT INTO employee VALUES(employee_sequence.nextval, ?, ?, ?, ?, ?)
                 """;
-        try {
-            oracle.jdbc.internal.OraclePreparedStatement preparedStatement = (oracle.jdbc.internal.OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertPod);
+            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                    DatabaseConfiguration.getConnection().prepareStatement(insertPod)) {
 
-            preparedStatement.setInt(1, obj.getUser_id());
-            preparedStatement.setString(2, obj.getJobTitle());
-            preparedStatement.setDate(3, obj.getHiringDate());
-            preparedStatement.setInt(4, obj.getSalary());
-            preparedStatement.setInt(5, obj.getDailyWorkHours());
 
-            preparedStatement.executeUpdate();
+                preparedStatement.setInt(1, obj.getUser_id());
+                preparedStatement.setString(2, obj.getJobTitle());
+                preparedStatement.setDate(3, obj.getHiringDate());
+                preparedStatement.setInt(4, obj.getSalary());
+                preparedStatement.setInt(5, obj.getDailyWorkHours());
 
-        } catch (SQLException ex) {
-            throw new RuntimeException(ex);
-        }
+                preparedStatement.executeUpdate();
+
+            } catch (SQLException ex) {
+                throw new RuntimeException(ex);
+            }
+
     }
-
-
 //
     @Override
     public Employee get(int id) {
@@ -73,9 +73,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                 FROM employee e, App_User u WHERE e.id = u.id
                 AND e.employee_id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             preparedStatement.setInt(1, id);
 
@@ -115,9 +115,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                   FROM employee e, App_User u WHERE e.user_id = u.user_id
                 """;
 
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -155,9 +155,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                     WHERE
                         employee_id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatementPod);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatementPod)) {
+
 
             preparedStatement.setString(1, obj.getJobTitle());
             preparedStatement.setDate(2, obj.getHiringDate());
@@ -177,9 +177,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                     WHERE
                         user_id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatementTrk);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatementTrk)) {
+
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getEmail());
@@ -200,9 +200,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                 DELETE FROM employee
                 WHERE employee_id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
+
 
             preparedStatement.setInt(1, obj.getEmployee_id());
 
@@ -215,9 +215,9 @@ public class EmployeeRepository implements GenericRepository<Employee> {
                 DELETE FROM App_User
                 WHERE user_id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatementTrk);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatementTrk)) {
+
 
             preparedStatement.setInt(1, obj.getUser_id());
 

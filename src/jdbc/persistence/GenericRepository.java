@@ -1,4 +1,5 @@
 package jdbc.persistence;
+
 import config.DatabaseConfiguration;
 import jdbc.exceptions.InvalidDataException;
 
@@ -8,27 +9,23 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 
 public interface GenericRepository<T> {
-    DatabaseConfiguration dbConnection = DatabaseConfiguration.getInstance();
 
-    public void add(T entity);
-    public T get(int id);
-    public ArrayList<T> getAll() throws RuntimeException, InvalidDataException;
-    public void update(T entity);
-    public void delete(T entity);
+    void add(T entity);
+    T get(int id);
+    ArrayList<T> getAll() throws RuntimeException, InvalidDataException;
+    void update(T entity);
+    void delete(T entity);
 
-      default int retrieveLastId(String index) {
+    default int retrieveLastId(String index) {
         String selectQuery = "SELECT last_number FROM user_sequences WHERE SEQUENCE_NAME = ?";
-        int result = -1; // Valoarea implicită pentru cazurile în care secvența nu este găsită sau este nulă
+        int result = -1;
 
-        try (PreparedStatement preparedStatement = dbConnection.getContext().prepareStatement(selectQuery)) {
+        try (PreparedStatement preparedStatement = DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
             preparedStatement.setString(1, index);
 
             try (ResultSet resultSet = preparedStatement.executeQuery()) {
                 if (resultSet.next()) {
-                    String lastNumber = resultSet.getString("last_number");
-                    if (lastNumber != null) {
-                        result = Integer.parseInt(lastNumber) - 1;
-                    }
+                    result = resultSet.getInt("last_number") - 1;
                 }
             }
         } catch (SQLException ex) {
@@ -37,5 +34,4 @@ public interface GenericRepository<T> {
 
         return result;
     }
-
 }

@@ -1,7 +1,7 @@
 package jdbc.persistence;
 import config.DatabaseConfiguration;
 import jdbc.model.Client;
-import oracle.jdbc.internal.OraclePreparedStatement;
+import oracle.jdbc.OraclePreparedStatement;
 
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -11,10 +11,10 @@ import java.util.List;
 
 public class ClientRepository implements GenericRepository<Client> {
     private static ClientRepository instance = null;
-//    private Connection connection; // Adăugăm conexiunea ca membru al clasei
+    private Connection connection; // Adăugăm conexiunea ca membru al clasei
 
     public ClientRepository() {
-//        connection = DatabaseConfiguration.getContext();
+        connection = DatabaseConfiguration.getConnection();
     }
 
     public static ClientRepository getInstance() {
@@ -30,9 +30,9 @@ public class ClientRepository implements GenericRepository<Client> {
         String insertUser = """
                 INSERT INTO App_User VALUES (user_sequence.nextval, ?, ?, ?, ?, ?)
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertUser);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertUser)) {
+
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getEmail());
@@ -43,7 +43,7 @@ public class ClientRepository implements GenericRepository<Client> {
 
             preparedStatement.executeUpdate();
 
-            obj.setUser_id(retrieveLastId("user_sequence"));
+            obj.setUser_id(retrieveLastId("USER_SEQUENCE"));
 
 
         } catch (SQLException ex) {
@@ -52,16 +52,15 @@ public class ClientRepository implements GenericRepository<Client> {
         String insertPod = """
                 INSERT INTO client VALUES(client_sequence.nextval, ?, ?)
                 """;
-        try {
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertPod)) {
 
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertPod);
 
             preparedStatement.setInt(1, obj.getUser_id());
             preparedStatement.setString(2, obj.getAddress());
 
             preparedStatement.executeUpdate();
-            obj.setClinet_id(retrieveLastId("client_sequence"));
+            obj.setClinet_id(retrieveLastId("CLIENT_SEQUENCE"));
         } catch (SQLException ex) {
             throw new RuntimeException(ex);
         }
@@ -84,13 +83,14 @@ public class ClientRepository implements GenericRepository<Client> {
                 FROM App_User u, client c WHERE c.user_id = u.user_id
                 AND c.client_id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             preparedStatement.setInt(1, id);
 
             ResultSet res = preparedStatement.executeQuery();
+
 
             if (res.next()) {
                 return new Client(
@@ -120,10 +120,9 @@ public class ClientRepository implements GenericRepository<Client> {
                 c.client_id, c.address
         FROM App_User u, client c WHERE u.user_id = c.user_id
         """;
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
 
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -157,9 +156,9 @@ public class ClientRepository implements GenericRepository<Client> {
                     WHERE
                         client_id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatementPod);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatementPod)) {
+
 
             preparedStatement.setString(1, obj.getAddress());
             preparedStatement.setInt(2, obj.getClient_id());
@@ -178,9 +177,9 @@ public class ClientRepository implements GenericRepository<Client> {
                     WHERE
                         id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatementUsr);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatementUsr)) {
+
 
             preparedStatement.setString(1, obj.getUsername());
             preparedStatement.setString(2, obj.getPassword());
@@ -201,9 +200,9 @@ public class ClientRepository implements GenericRepository<Client> {
                 DELETE FROM client
                 WHERE client_id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
+
 
             preparedStatement.setInt(1, obj.getClient_id());
 
@@ -214,11 +213,11 @@ public class ClientRepository implements GenericRepository<Client> {
 
         String deleteStatementTrk = """
                 DELETE FROM App_User
-                WHERE id = ?
+                WHERE user_id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatementTrk);
+        try (oracle.jdbc.OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatementTrk)) {
+
 
             preparedStatement.setInt(1, obj.getUser_id());
 

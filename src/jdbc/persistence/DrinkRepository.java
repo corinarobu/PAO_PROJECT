@@ -1,6 +1,7 @@
 package jdbc.persistence;
 
 
+import config.DatabaseConfiguration;
 import jdbc.model.Drink;
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -26,12 +27,12 @@ public class DrinkRepository implements GenericRepository<Drink> {
                 INSERT INTO drink
                 VALUES(drink_sequence.nextval,?,?,?,?)
                 """;
-        try{
-            PreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertStatement);
+
+            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                    DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
 
 
-            preparedStatement.setString(1,obj.getName());
+                preparedStatement.setString(1,obj.getName());
             preparedStatement.setInt(2, obj.getPrice());
             preparedStatement.setInt(3, obj.isAlcoholic());
             preparedStatement.setInt(4, obj.getCalories());
@@ -51,10 +52,11 @@ public class DrinkRepository implements GenericRepository<Drink> {
                     FROM drink 
                     WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
-            preparedStatement.setInt(1, id);
+
+            try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                    DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
+                preparedStatement.setInt(1, id);
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -80,9 +82,8 @@ public class DrinkRepository implements GenericRepository<Drink> {
                 SELECT  name, price, alcoholic, calories
                     FROM drink 
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -114,9 +115,9 @@ public class DrinkRepository implements GenericRepository<Drink> {
                 WHERE
                     id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatement)) {
+
 
             preparedStatement.setString(1, obj.getName());
             preparedStatement.setDouble(2, obj.getPrice());
@@ -136,9 +137,9 @@ public class DrinkRepository implements GenericRepository<Drink> {
                 DELETE FROM drink
                 WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
+
 
             preparedStatement.setInt(1, obj.getId());
 

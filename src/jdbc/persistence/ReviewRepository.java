@@ -1,5 +1,6 @@
 package jdbc.persistence;
 
+import config.DatabaseConfiguration;
 import jdbc.model.Review;
 import oracle.jdbc.OraclePreparedStatement;
 
@@ -25,9 +26,9 @@ public class ReviewRepository implements GenericRepository<Review>{
                 INSERT INTO review
                 VALUES(order_sequence.nextval,?,?,?)
                 """;
-        try{
-            PreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(insertStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(insertStatement)) {
+
 
 
             preparedStatement.setInt(3, obj.getRating());
@@ -49,9 +50,9 @@ public class ReviewRepository implements GenericRepository<Review>{
                     FROM review 
                     WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
             preparedStatement.setInt(1, id);
 
             ResultSet res = preparedStatement.executeQuery();
@@ -76,9 +77,9 @@ public class ReviewRepository implements GenericRepository<Review>{
                     SELECT rating, comment, userAge 
                     FROM review 
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(selectQuery);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+
 
             ResultSet res = preparedStatement.executeQuery();
 
@@ -110,9 +111,9 @@ public class ReviewRepository implements GenericRepository<Review>{
                 WHERE
                     id = ?
                 """;
-        try {
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(updateStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(updateStatement)) {
+
 
             preparedStatement.setInt(1, obj.getRating());
             preparedStatement.setString(2, obj.getComment());
@@ -132,9 +133,9 @@ public class ReviewRepository implements GenericRepository<Review>{
                 DELETE FROM review
                 WHERE id = ?
                 """;
-        try{
-            OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                    dbConnection.getContext().prepareStatement(deleteStatement);
+        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+                DatabaseConfiguration.getConnection().prepareStatement(deleteStatement)) {
+
 
             preparedStatement.setInt(1, obj.getId());
 
