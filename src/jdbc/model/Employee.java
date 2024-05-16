@@ -72,7 +72,7 @@ public class Employee extends App_User {
     public String toString() {
         return "Employee{" +
                 "id = " + getId() +
-                "username='" + getUsername() + '\'' +
+                ", username='" + getUsername() + '\'' +
                 ", email='" + getEmail() + '\'' +
                 ", jobTitle='" + jobTitle + '\'' +
                 ", hiringDate=" + hiringDate +

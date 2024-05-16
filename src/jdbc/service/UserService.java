@@ -18,12 +18,9 @@ import java.util.Scanner;
 
 public class UserService {
 
-//    private List<App_User> userList = new ArrayList<>();
     private ClientRepository clientRepository;
     private EmployeeRepository employeeRepository;
     private Scanner scanner;
-//    private List<Client> clientList;
-//    private List<Employee> employeeList;
 
     private List<Review> reviewList = new ArrayList<>();
 
@@ -37,8 +34,6 @@ public class UserService {
         this.clientRepository = clientRepository;
         this.employeeRepository = employeeRepository;
         this.scanner = new Scanner(System.in);
-//        this.clientList = clientRepository.getAll();
-//        this.employeeList = employeeRepository.getAll();
     }
 
     public void addUser() {
@@ -61,9 +56,6 @@ public class UserService {
     }
 
 
-//    public void addUser(App_User user) {
-//        userList.add(user);
-//    }
 
     private int readOption() {
         try {
@@ -92,10 +84,9 @@ public class UserService {
         int lastUserId = clientRepository.getLastUserId();
         int user_id = lastUserId + 1;
 
-        // Crearea unui obiect Client folosind constructorul specificat
+
         Client client = new Client(user_id, username, email, password, phoneNumber, age, user_id, address);
 
-        // Adăugarea clientului în baza de date utilizând repository-ul clientRepository
         clientRepository.add(client);
 
         System.out.println("Client adăugat cu succes.");
@@ -156,7 +147,6 @@ public class UserService {
         System.out.print("Enter user ID: ");
         int userId = Integer.parseInt(scanner.nextLine());
 
-        // Verificăm dacă utilizatorul este un client sau un angajat
         Client client = clientRepository.get(userId);
         Employee employee = employeeRepository.get(userId);
 
@@ -189,6 +179,7 @@ public class UserService {
             System.out.println("Employee profile updated successfully.");
         }
     }
+
 
 
     public void deleteUser() {

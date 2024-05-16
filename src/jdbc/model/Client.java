@@ -46,7 +46,7 @@ public class Client extends App_User {
     public String toString() {
         return "Client{" +
                 "id = " + getId() +
-                "username='" + getUsername() + '\'' +
+                ", username='" + getUsername() + '\'' +
                 ", email='" + getEmail() + '\'' +
                 ", address='" + address + '\'' +
                 ", password='" + getPassword() + '\'' +

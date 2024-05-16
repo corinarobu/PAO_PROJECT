@@ -23,8 +23,8 @@ public class OrderService {
 
     public OrderService(OrderRepository orderRepository) {
         this.orderRepository = orderRepository;
-        this.foodService = new FoodService(); // Inițializați foodService aici
-        this.drinkService = new DrinkService(); // Inițializați drinkService aici
+        this.foodService = new FoodService();
+        this.drinkService = new DrinkService();
     }
 
 

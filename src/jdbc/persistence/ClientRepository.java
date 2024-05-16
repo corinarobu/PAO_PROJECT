@@ -62,7 +62,7 @@ public class ClientRepository extends AbstractRepository<Client> {
     public Client get(int id) {
         String selectQuery = """
                 SELECT u.user_id, u.username, u.email,
-                    u.password, u.age, u.phoneNumber
+                    u.password, u.age, u.phoneNumber,
                         c.client_id, c.address
                 FROM App_User u, client c WHERE c.user_id = u.user_id
                 AND c.client_id = ?
@@ -158,7 +158,7 @@ public class ClientRepository extends AbstractRepository<Client> {
                         password = ?,
                         age = ?
                     WHERE
-                        id = ?
+                        user_id = ?
                 """;
         try (oracle.jdbc.OraclePreparedStatement preparedStatement = (oracle.jdbc.OraclePreparedStatement)
                 DatabaseConfiguration.getConnection().prepareStatement(updateStatementUsr)) {

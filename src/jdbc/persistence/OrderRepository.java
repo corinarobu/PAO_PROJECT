@@ -44,6 +44,7 @@ public class OrderRepository implements GenericRepository<Order> {
             preparedStatement.setInt(4, obj.getDrinkItem().getId());
 
             preparedStatement.executeUpdate();
+
             orders.add(obj);
 
         } catch (SQLException ex) {

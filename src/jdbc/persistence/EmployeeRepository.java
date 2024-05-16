@@ -53,48 +53,47 @@ public class EmployeeRepository extends AbstractRepository<Employee> {
         }
     }
 //
-    @Override
-    public Employee get(int id) {
-        String selectQuery = """
-                SELECT u.user_id, u.username, u.email,
-                    u.password, u.age, u.phoneNumber, e.employee_id,
-                        e.jobTitle, e.hiringDate, e.salary, e.dailyWorkHours
-                FROM employee e, App_User u WHERE e.id = u.id
-                AND e.employee_id = ?
-                """;
-        try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
-                DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
+@Override
+public Employee get(int id) {
+    String selectQuery = """
+            SELECT u.user_id, u.username, u.email,
+                u.password, u.age, u.phoneNumber, e.employee_id,
+                e.jobTitle, e.hiringDate, e.salary, e.dailyWorkHours
+            FROM employee e, App_User u 
+            WHERE e.user_id = u.user_id
+            AND e.employee_id = ?
+            """;
+    try (OraclePreparedStatement preparedStatement = (OraclePreparedStatement)
+            DatabaseConfiguration.getConnection().prepareStatement(selectQuery)) {
 
+        preparedStatement.setInt(1, id);
 
-            preparedStatement.setInt(1, id);
+        ResultSet res = preparedStatement.executeQuery();
 
-            ResultSet res = preparedStatement.executeQuery();
-
-            if (res.next()){
-
-                return new Employee(
-                        res.getInt(1),
-                        res.getString(2),
-                        res.getString(3),
-                        res.getString(4),
-                        res.getString(5),
-                        res.getInt(6),
-                        res.getInt(7),
-                        res.getString(8),
-                        res.getDate(9),
-                        res.getInt(10),
-                        res.getInt(11)
-                );
-            }
-            else{
-                throw new RuntimeException();
-            }
-
-        }catch (SQLException ex){
-            throw new RuntimeException(ex);
+        if (res.next()) {
+            return new Employee(
+                    res.getInt(1),
+                    res.getString(2),
+                    res.getString(3),
+                    res.getString(4),
+                    res.getString(5),
+                    res.getInt(6),
+                    res.getInt(7),
+                    res.getString(8),
+                    res.getDate(9),
+                    res.getInt(10),
+                    res.getInt(11)
+            );
+        } else {
+            throw new RuntimeException("Employee not found");
         }
+
+    } catch (SQLException ex) {
+        throw new RuntimeException(ex);
     }
-//
+}
+
+    //
 @Override
 public ArrayList<Employee> getAll() {
     String selectQuery = """
